@@ -13,11 +13,12 @@ class ViewController: UIViewController, StompClientLibDelegate {
     
     var socketClient = StompClientLib()
     let topic = "/topic/greetings"
-    var url = NSURL()
+    var url: URL!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Connection with socket
+        socketClient.logger = StompClientLib.simplePrintLogger
+        // Connect with socket
         registerSocket()
     }
     
@@ -25,14 +26,8 @@ class ViewController: UIViewController, StompClientLibDelegate {
         socketClient.sendMessage(message: "StompClientLib Foo", toDestination: "/app/hello", withHeaders: nil, withReceipt: nil)
     }
     func registerSocket(){
-        let baseURL = "http://localhost:8080/"
-        // Cut the first 7 character which are "http://" Not necessary!!!
-        // substring is depracated in iOS 11, use prefix instead :)
-        let wsURL = baseURL.substring(from:baseURL.index(baseURL.startIndex, offsetBy: 7))
-        let completedWSURL = "ws://\(wsURL)hello/websocket"
-        
-        url = NSURL(string: completedWSURL)!
-        socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url as URL) , delegate: self as StompClientLibDelegate)
+        url = URL(string: "ws://localhost:8080/hello/websocket")!
+        socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url) , delegate: self)
     }
     
     func stompClientDidConnect(client: StompClientLib!) {
@@ -42,7 +37,7 @@ class ViewController: UIViewController, StompClientLibDelegate {
         // Auto Disconnect after 3 sec
         socketClient.autoDisconnect(time: 3)
         // Reconnect after 4 sec
-        socketClient.reconnect(request: NSURLRequest(url: url as URL) , delegate: self as StompClientLibDelegate, time: 4.0)
+        socketClient.reconnect(request: NSURLRequest(url: url) , delegate: self, time: 4.0)
     }
     
     func stompClientDidDisconnect(client: StompClientLib!) {

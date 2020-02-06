@@ -78,18 +78,69 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
     public var certificateCheckEnabled = true
     private var urlRequest: NSURLRequest?
     
+    public enum ErrorLevel: CInt, Equatable, Comparable, RawRepresentable {
+        public static func < (lhs: StompClientLib.ErrorLevel, rhs: StompClientLib.ErrorLevel) -> Bool {
+            return lhs.rawValue < rhs.rawValue
+        }
+        
+        public typealias RawValue = CInt
+        
+        case debug
+        case warn
+        case error
+        case bug
+    }
+    
+    public static let nullLogger: ((_ message: String, _ filename: String, _ function: String, _ linenumber: CInt, _ errorLevel: ErrorLevel) -> ()) = { (_, _, _, _, _) in
+        // does nothing
+    }
+    
+    public static let simplePrintLogger: ((_ message: String, _ filename: String, _ function: String, _ linenumber: CInt, _ errorLevel: ErrorLevel) -> ()) = { (message, _, function, linenumber, errorLevel) in
+        print("StompClientLib \(errorLevel) \(function): \(message)")
+    }
+    
+    /// By default, this is the nullLogger which logs nothing. You may override it with any
+    /// logging function: new instances of the class have their logger initialized
+    /// with this value.
+    public static var defaultLogger: ((_ message: String, _ filename: String, _ function: String, _ linenumber: CInt, _ errorLevel: ErrorLevel) -> ()) = nullLogger
+    
+    /// The logger to use. Defaults to StompClientLib.defaultLogger (which in turn
+    /// defaults to the nullLogger)
+    public var logger = StompClientLib.defaultLogger
+    
+    private func logDebug(_ message: String, filename: String = #file, function: String = #function, linenumber: CInt = #line) {
+        logger(message, filename, function, linenumber, .debug)
+    }
+    
+    private func logWarn(_ message: String, filename: String = #file, function: String = #function, linenumber: CInt = #line) {
+        logger(message, filename, function, linenumber, .warn)
+    }
+    
+    private func logError(_ message: String, filename: String = #file, function: String = #function, linenumber: CInt = #line) {
+        logger(message, filename, function, linenumber, .error)
+    }
+    
+    private func logBug(_ message: String, filename: String = #file, function: String = #function, linenumber: CInt = #line) {
+        logger(message, filename, function, linenumber, .bug)
+    }
+    
     public func sendJSONForDict(dict: AnyObject, toDestination destination: String) {
         do {
             let theJSONData = try JSONSerialization.data(withJSONObject: dict, options: JSONSerialization.WritingOptions())
             let theJSONText = String(data: theJSONData, encoding: String.Encoding.utf8)
-            //print(theJSONText!)
+            //logDebug(theJSONText ?? "nil")
             let header = [StompCommands.commandHeaderContentType:"application/json;charset=UTF-8"]
             sendMessage(message: theJSONText!, toDestination: destination, withHeaders: header, withReceipt: nil)
         } catch {
-            print("error serializing JSON: \(error)")
+            logError("error serializing JSON: \(error)")
         }
     }
     
+    /// Connects to a particular host
+    ///
+    /// - parameter request: A request with a "ws" or "wss" URL
+    /// - parameter delegate: Hey, I just met you, and this is crazy, but here's my number, so call me maybe.
+    /// - parameter connectionHeaders: Optionally specify username and password. To specify username and password use "login" as the key for the username and "passcode" as the key for the password. (There may be other possible keys, but I haven't figured them out yet. RTFS.)
     public func openSocketWithURLRequest(request: NSURLRequest, delegate: StompClientLibDelegate, connectionHeaders: [String: String]? = nil) {
         self.connectionHeaders = connectionHeaders
         self.delegate = delegate
@@ -192,12 +243,12 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
     }
     
     public func webSocketDidOpen(_ webSocket: SRWebSocket!) {
-        print("WebSocket is connected")
+        logDebug("WebSocket is connected")
         connect()
     }
     
     public func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
-        print("didFailWithError: \(String(describing: error))")
+        logError("didFailWithError: \(String(describing: error))")
         
         if let delegate = delegate {
             DispatchQueue.main.async(execute: {
@@ -207,7 +258,7 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
     }
     
     public func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
-        print("didCloseWithCode \(code), reason: \(String(describing: reason))")
+        logDebug("didCloseWithCode \(code), reason: \(String(describing: reason))")
         if let delegate = delegate {
             DispatchQueue.main.async(execute: {
                 delegate.stompClientDidDisconnect(client: self)
@@ -216,7 +267,7 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
     }
     
     public func webSocket(_ webSocket: SRWebSocket!, didReceivePong pongPayload: Data!) {
-        print("didReceivePong")
+        logDebug("didReceivePong")
     }
     
     private func sendFrame(command: String?, header: [String: String]?, body: AnyObject?) {
@@ -278,7 +329,7 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
                     return json as AnyObject
                 }
             } catch {
-                print("error serializing JSON: \(error)")
+                logError("error serializing JSON: \(error)")
             }
         }
         return nil
@@ -462,7 +513,7 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
             // Fallback on earlier versions
             // Swift >=3 selector syntax
             //            Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(self.reconnectFallback), userInfo: nil, repeats: true)
-            print("Reconnect Feature has no support for below iOS 10, it is going to be available soon!")
+            logWarn("Reconnect Feature has no support for below iOS 10, it is going to be available soon!")
         }
     }
     //    @objc func reconnectFallback() {
@@ -494,4 +545,3 @@ public class StompClientLib: NSObject, SRWebSocketDelegate {
         }
     }
 }
-
