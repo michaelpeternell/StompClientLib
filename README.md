@@ -71,7 +71,7 @@ After you are connected, StompClientLib will call some delegate methods, which y
 ## stompClientDidConnect
 
 ```swift
-func stompClientDidConnect(client: StompClientLib!) {
+func stompClientDidConnect(client: StompClientLib) {
     print("Socket is connected")
     // Stomp subscribe will be here!
     socketClient.subscribe(destination: topic)
@@ -82,7 +82,7 @@ func stompClientDidConnect(client: StompClientLib!) {
 ## stompClientDidDisconnect
 
 ```swift
-func stompClientDidDisconnect(client: StompClientLib!) {
+func stompClientDidDisconnect(client: StompClientLib) {
     print("Socket is Disconnected")
 }
 ```
@@ -92,7 +92,7 @@ func stompClientDidDisconnect(client: StompClientLib!) {
 Your json message will be converted to JSON Body as AnyObject and you will receive your message in this function
 
 ```swift
-func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, akaStringBody stringBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
+func stompClient(client: StompClientLib, didReceiveMessageWithJSONBody jsonBody: AnyObject?, akaStringBody stringBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
     print("Destination : \(destination)")
     print("JSON Body : \(String(describing: jsonBody))")
     print("String Body : \(stringBody ?? "nil")")
@@ -104,7 +104,7 @@ func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody
 Your json message will be converted to JSON Body as AnyObject and you will receive your message in this function
 
 ```swift
-func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
+func stompClientJSONBody(client: StompClientLib, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
     print("DESTIONATION : \(destination)")
     print("String JSON BODY : \(String(describing: jsonBody))")
 }
@@ -115,7 +115,7 @@ func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody 
 If you will use STOMP for in-app purchase, you might need to use this function to get receipt
 
 ```swift
-func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
+func serverDidSendReceipt(client: StompClientLib, withReceiptId receiptId: String) {
     print("Receipt : \(receiptId)")
 }
 ```
@@ -125,7 +125,7 @@ func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: Stri
 Your error message will be received in this function
 
 ```swift
-func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?) {
+func serverDidSendError(client: StompClientLib, withErrorMessage description: String, detailedErrorMessage message: String?) {
   print("Error Send : \(String(describing: message))")
 }
 ```
