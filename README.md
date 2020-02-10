@@ -14,7 +14,9 @@ Language: Swift 5
 
 ## Introduction
 
-StompClientLib is a stomp client in Swift. It uses Facebook's [SocketRocket](https://github.com/facebook/SocketRocket) as a websocket dependency. SocketRocket is written in Objective-C but StompClientLib's STOMP part is written in Swift and its usage is Swift. You can use this library in your Swift 5+ projects.
+If you are wondering "what is STOMP??" - see the [Apache ActiveMQ website](http://activemq.apache.org) for an introduction to message brokers, MQTT, Websockets and STOMP.
+
+StompClientLib is a STOMP client in Swift. It uses Facebook's [SocketRocket](https://github.com/facebook/SocketRocket) as a websocket dependency. SocketRocket is written in Objective-C but StompClientLib's STOMP part is written in Swift and its usage is Swift. You can use this library in your Swift 5+ projects.
 
 This is a fork from [StompClientLib](https://github.com/WrathChaos/StompClientLib), forked in February 6th 2020 by michaelpeternell. StompClientLib is a fork from [AKStompClient](https://github.com/alibasta/AKStompClient).
 
@@ -147,8 +149,8 @@ Suggestion : Subscribe to your topic in "stompClientDidConnect" function and uns
 ## Subscribe
 
 ```swift
+let topic = "/topic/FOO.BAR.1337"
 socketClient.subscribe(destination: topic)
-// Note : topic needs to be a String object
 ```
 
 ## Unsubscribe
@@ -157,7 +159,7 @@ socketClient.subscribe(destination: topic)
 socketClient.unsubscribe(destination: topic)
 ```
 
-Important : You have to send your destination for both subscribe or unsubscribe!
+Important: You have to send your destination for both subscribe or unsubscribe!
 
 ## Unsubsribe with header
 
@@ -191,6 +193,10 @@ socketClient.autoDisconnect(time: 3)
 ```
 
 # Change Log
+
+## [1.4.1](https://github.com/michaelpeternell/StompClientLib/tree/1.4.1) (2020-02-10)
+
+Delegate protocol `StompClientLibDelegate` now uses `client: StompClientLib` instead of `client: StompClientLib!` in its signatures.
 
 ## [1.4.0](https://github.com/michaelpeternell/StompClientLib/tree/1.4.0) (2020-02-06)
 

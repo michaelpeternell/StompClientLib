@@ -30,7 +30,7 @@ class ViewController: UIViewController, StompClientLibDelegate {
         socketClient.openSocketWithURLRequest(request: NSURLRequest(url: url) , delegate: self)
     }
     
-    func stompClientDidConnect(client: StompClientLib!) {
+    func stompClientDidConnect(client: StompClientLib) {
         let topic = self.topic
         print("Socket is Connected : \(topic)")
         socketClient.subscribe(destination: topic)
@@ -40,26 +40,26 @@ class ViewController: UIViewController, StompClientLibDelegate {
         socketClient.reconnect(request: NSURLRequest(url: url) , delegate: self, time: 4.0)
     }
     
-    func stompClientDidDisconnect(client: StompClientLib!) {
+    func stompClientDidDisconnect(client: StompClientLib) {
         print("Socket is Disconnected")
     }
     
-    func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, akaStringBody stringBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
+    func stompClient(client: StompClientLib, didReceiveMessageWithJSONBody jsonBody: AnyObject?, akaStringBody stringBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
         print("DESTIONATION : \(destination)")
         print("JSON BODY : \(String(describing: jsonBody))")
         print("STRING BODY : \(stringBody ?? "nil")")
     }
     
-    func stompClientJSONBody(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
+    func stompClientJSONBody(client: StompClientLib, didReceiveMessageWithJSONBody jsonBody: String?, withHeader header: [String : String]?, withDestination destination: String) {
         print("DESTIONATION : \(destination)")
         print("String JSON BODY : \(String(describing: jsonBody))")
     }
     
-    func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String) {
+    func serverDidSendReceipt(client: StompClientLib, withReceiptId receiptId: String) {
         print("Receipt : \(receiptId)")
     }
     
-    func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?) {
+    func serverDidSendError(client: StompClientLib, withErrorMessage description: String, detailedErrorMessage message: String?) {
         print("Error : \(String(describing: message))")
     }
     

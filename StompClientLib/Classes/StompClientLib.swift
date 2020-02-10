@@ -58,14 +58,14 @@ public enum StompAckMode {
     case ClientIndividualMode
 }
 
-// Fundamental Protocols
+/// StompClientLib delegate protocol
 public protocol StompClientLibDelegate {
-    func stompClient(client: StompClientLib!, didReceiveMessageWithJSONBody jsonBody: AnyObject?, akaStringBody stringBody: String?, withHeader header:[String:String]?, withDestination destination: String)
+    func stompClient(client: StompClientLib, didReceiveMessageWithJSONBody jsonBody: AnyObject?, akaStringBody stringBody: String?, withHeader header:[String:String]?, withDestination destination: String)
     
-    func stompClientDidDisconnect(client: StompClientLib!)
-    func stompClientDidConnect(client: StompClientLib!)
-    func serverDidSendReceipt(client: StompClientLib!, withReceiptId receiptId: String)
-    func serverDidSendError(client: StompClientLib!, withErrorMessage description: String, detailedErrorMessage message: String?)
+    func stompClientDidDisconnect(client: StompClientLib)
+    func stompClientDidConnect(client: StompClientLib)
+    func serverDidSendReceipt(client: StompClientLib, withReceiptId receiptId: String)
+    func serverDidSendError(client: StompClientLib, withErrorMessage description: String, detailedErrorMessage message: String?)
     func serverDidSendPing()
 }
 
